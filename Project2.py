@@ -158,6 +158,8 @@ def preprocess_dataframe(df, text_column):
 data_path, task, pickle_path, should_pickle = parse_args()
 
 if task == "NNClass":
+    nltk.download('stopwords')
+    nltk.download('punkt')
     if pickle_path is not None and not should_pickle:
         print("Opening pickle...")
         in_pickle_file = open(pickle_path, "rb")
@@ -260,6 +262,8 @@ if task == "NNClass":
 
         quit()
 elif task == "MLPReg":
+    nltk.download('punkt')
+    nltk.download('stopwords')
     if pickle_path is not None and not should_pickle:
         print("Opening pickle...")
         in_pickle_file = open(pickle_path, "rb")
@@ -363,6 +367,8 @@ elif task == "MLPReg":
 
         quit()
 elif task == "Prob":
+    nltk.download('punkt')
+    nltk.download('stopwords')
     #TODO get this to work
     if pickle_path is None or should_pickle:
         df = ConvertJSONFileToDataFrame(data_path, max_entries=5000)
@@ -526,6 +532,8 @@ elif task == "Prob":
         print(mean_squared_error(y['funny'], predictFunny))
         quit()
 elif task == "SVMClass":
+    nltk.download('punkt')
+    nltk.download('stopwords')
     if pickle_path is None or should_pickle:
         df = ConvertJSONFileToDataFrame(data_path, 1000)
         df = preprocess_dataframe(df, 'text')
@@ -573,6 +581,8 @@ elif task == "SVMClass":
         print("Classification Report for label", label_report_stars)
         quit()
 elif task == "SVRReg":
+    nltk.download('punkt')
+    nltk.download('stopwords')
     if pickle_path is None or should_pickle:
         df = ConvertJSONFileToDataFrame(data_path, 1000)
         df = preprocess_dataframe(df, 'text')
