@@ -456,18 +456,20 @@ elif task == "Prob":
         regressionCool = linear_model.BayesianRidge()
         regressionCool.fit(data, targetVectorCool)
         predictCool = regressionCool.predict(pca.fit_transform(vectorizer.fit_transform(test['text'])))
-        mean_squared_error(test['cool'], predictCool)
+        print("Mean Squared Error Cool")
+        print(mean_squared_error(test['cool'], predictCool))
         regressionUseful = linear_model.BayesianRidge()
         regressionUseful.fit(data, targetVectorUseful)
         predictUseful = regressionUseful.predict(pca.fit_transform(vectorizer.fit_transform(test['text'])))
-        mean_squared_error(test['useful'], predictUseful)
+        print("Mean Squared Error Useful")
+        print(mean_squared_error(test['useful'], predictUseful))
         regressionFunny = linear_model.BayesianRidge()
         regressionFunny.fit(data, targetVectorFunny)
         predictFunny = regressionFunny.predict(pca.fit_transform(vectorizer.fit_transform(test['text'])))
-        mean_squared_error(test['funny'], predictFunny)
-
+        print("Mean Squared Error Funny")
+        print(mean_squared_error(test['funny'], predictFunny))
         if should_pickle:
-            model = (ps_catagory, bigDict)
+            model = (ps_catagory, bigDict, regressionCool, regressionUseful,regressionFunny)
             out_file = open(pickle_path, "wb")
             pickle.dump(model, out_file)
             out_file.close()
@@ -486,7 +488,7 @@ elif task == "Prob":
         X = df['text']
         y = df[target_columns]
 
-        ps_catagory, bigDict = model
+        ps_catagory, bigDict, regressionCool, regressionUseful,regressionFunny = model
 
         predictionSet = []
         # Build Train Model
@@ -513,18 +515,15 @@ elif task == "Prob":
         data = vectorizer.fit_transform(X)
         pca = decomposition.TruncatedSVD(n_components=50)
         data = pca.fit_transform(data)
-        regressionCool = linear_model.BayesianRidge()
-        regressionCool.fit(data, targetVectorCool)
         predictCool = regressionCool.predict(pca.fit_transform(vectorizer.fit_transform(X)))
-        mean_squared_error(y['cool'], predictCool)
-        regressionUseful = linear_model.BayesianRidge()
-        regressionUseful.fit(data, targetVectorUseful)
+        print("Mean Squared Error Cool")
+        print(mean_squared_error(y['cool'], predictCool))
         predictUseful = regressionUseful.predict(pca.fit_transform(vectorizer.fit_transform(X)))
-        mean_squared_error(y['useful'], predictUseful)
-        regressionFunny = linear_model.BayesianRidge()
-        regressionFunny.fit(data, targetVectorFunny)
+        print("Mean Squared Error Useful")
+        print(mean_squared_error(y['useful'], predictUseful))
         predictFunny = regressionFunny.predict(pca.fit_transform(vectorizer.fit_transform(X)))
-        mean_squared_error(y['funny'], predictFunny)
+        print("Mean Squared Error Funny")
+        print(mean_squared_error(y['funny'], predictFunny))
         quit()
 elif task == "SVMClass":
     if pickle_path is None or should_pickle:
