@@ -467,13 +467,64 @@ elif task == "Prob":
         mean_squared_error(test['funny'], predictFunny)
 
         if should_pickle:
-            model = ProbWrapper()
+            model = (ps_catagory, bigDict)
             out_file = open(pickle_path, "wb")
             pickle.dump(model, out_file)
             out_file.close()
-
         quit()
     elif not should_pickle and pickle_path is not None:
+        print("Opening pickle...")
+        in_pickle_file = open(pickle_path, "rb")
+        model = pickle.load(in_pickle_file)
+        in_pickle_file.close()
+        print("Done.")
+        df = ConvertJSONFileToDataFrame(data_path, 10000)
+        df = preprocess_dataframe(df, 'text')
+
+        target_columns = ['stars', 'cool', 'funny', 'useful']
+
+        X = df['text']
+        y = df[target_columns]
+
+        ps_catagory, bigDict = model
+
+        predictionSet = []
+        # Build Train Model
+        for row in range(len(X)):
+            content = X.iloc[row]
+            p_chance = ps_catagory.copy()
+            for w in content.lower().split():
+                for i in range(5):
+                    if w in bigDict[i]:
+                        p_chance[i] = float(p_chance[i] * (bigDict[i][w]))
+            pred = p_chance.index(max(p_chance))
+            if (pred == 0):
+                predictionSet.append(1.0)
+            elif (pred == 1):
+                predictionSet.append(2.0)
+            elif (pred == 2):
+                predictionSet.append(3.0)
+            elif (pred == 3):
+                predictionSet.append(4.0)
+            elif (pred == 4):
+                predictionSet.append(5.0)
+        print(classification_report(y['stars'], predictionSet))
+        vectorizer = CountVectorizer(stop_words='english', ngram_range=(1, 1), dtype='double')
+        data = vectorizer.fit_transform(X)
+        pca = decomposition.TruncatedSVD(n_components=50)
+        data = pca.fit_transform(data)
+        regressionCool = linear_model.BayesianRidge()
+        regressionCool.fit(data, targetVectorCool)
+        predictCool = regressionCool.predict(pca.fit_transform(vectorizer.fit_transform(X)))
+        mean_squared_error(y['cool'], predictCool)
+        regressionUseful = linear_model.BayesianRidge()
+        regressionUseful.fit(data, targetVectorUseful)
+        predictUseful = regressionUseful.predict(pca.fit_transform(vectorizer.fit_transform(X)))
+        mean_squared_error(y['useful'], predictUseful)
+        regressionFunny = linear_model.BayesianRidge()
+        regressionFunny.fit(data, targetVectorFunny)
+        predictFunny = regressionFunny.predict(pca.fit_transform(vectorizer.fit_transform(X)))
+        mean_squared_error(y['funny'], predictFunny)
         quit()
 elif task == "SVMClass":
     if pickle_path is None or should_pickle:
